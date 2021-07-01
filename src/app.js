@@ -3,12 +3,12 @@ import cors from 'cors';
 import routes from './routes';
 
 // Executando a conexão com o banco de dados
+import './config';
 import './database';
 
 class App {
   constructor() {
     this.server = express();
-
     this.middlewares();
     this.routes();
   }

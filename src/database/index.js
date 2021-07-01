@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-const uri = 'mongodb+srv://igobrm:e1EbgzZfRMjcABLm@emonitoring.pg57j.mongodb.net/emonitoring?retryWrites=true&w=majority';
+
 class Database {
   constructor() {
     this.initMongo();
@@ -8,7 +8,7 @@ class Database {
   initMongo() {
     try {
       mongoose.connect(
-        uri,
+        process.env.DB_CONNECT_URL,
         {
           useNewUrlParser: true,
           useUnifiedTopology: true,

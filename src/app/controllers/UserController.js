@@ -38,8 +38,11 @@ class UserController {
 
   // Get all users (needs authentication)
   async getAll(req, res) {
-    const user = await User.find();
-    return res.json(user);
+    const { name, email } = await User.find();
+    return res.json({
+      name,
+      email
+    });
   }
 }
 

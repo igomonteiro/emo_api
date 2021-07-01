@@ -13,7 +13,7 @@ const routes = new Router();
 routes.post('/session', SessionController.newSession);
 
 // User
-routes.get('/users', UserController.getAll);
+routes.get('/users', authenticated, UserController.getAll);
 routes.post('/users', UserController.register);
 
 export default routes;

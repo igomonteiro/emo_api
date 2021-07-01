@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../schemas/Users';
 import { loginValidation } from '../services/validation';
-import authConfig from '../../config/auth';
 
 class SessionController {
   async newSession(req, res) {
@@ -23,7 +22,16 @@ class SessionController {
       res.status(400).json({ error: 'Email or password is wrong.' });
     }
 
-    return res.send('Logged in!');
+    const { id, name, email } = user;
+    
+    return res.json({
+      user: {
+        id,
+        name,
+        email,
+      },
+      token: jwt.sign({ id }, process.env.TOKEN_SECRET, { expiresIn: '7d'}),
+    });
   }
 }
 
