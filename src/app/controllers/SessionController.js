@@ -22,15 +22,21 @@ class SessionController {
       res.status(400).json({ error: 'Email or password is wrong.' });
     }
 
-    const { id, name, email } = user;
-    
+    const { _id } = user;
+
+    return res.json({
+      token: jwt.sign({ _id }, process.env.TOKEN_SECRET, { expiresIn: process.env.EXPIRES_IN}),
+    });
+  }
+
+  async getUserLoggedIn(req, res) {
+    const { _id, name, email } = await User.findById(req.user._id);
     return res.json({
       user: {
-        id,
+        _id,
         name,
-        email,
-      },
-      token: jwt.sign({ id }, process.env.TOKEN_SECRET, { expiresIn: '7d'}),
+        email
+      }
     });
   }
 }
