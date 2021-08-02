@@ -46,10 +46,14 @@ class UserController {
       return res.status(401).json({ error: 'Password does not match.' });
     }
 
-    const { _id, name } = await User.findByIdAndUpdate(req.user._id, req.body, {new : true});
+    const { _id, name, avatar } = await User.findByIdAndUpdate(req.user._id, 
+      req.body, {new : true})
+      .populate({ path: 'avatar', select: ['id', 'path', 'url']});
+    
     return res.json({
       _id,
       name,
+      avatar
     });
   }
 }

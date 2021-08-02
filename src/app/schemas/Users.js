@@ -20,17 +20,19 @@ const UserSchema = new mongoose.Schema({
     min: 8,
     max: 24,
   },
+  avatar: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'File',
+  },
   emotions: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      required: false,
       ref: 'Emotion',
     }
-  ]
+  ],
 }, {
   timestamps: true,
 });
-
 
 UserSchema.pre('save', async function (next) {
   try {

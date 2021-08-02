@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../schemas/Users';
+import File from '../schemas/Files';
 import { loginValidation } from '../services/validation';
 
 class SessionController {
@@ -30,12 +31,15 @@ class SessionController {
   }
 
   async getUserLoggedIn(req, res) {
-    const { _id, name, email } = await User.findById(req.user._id);
+    const { _id, name, email, avatar} = await User.findById(req.user._id)
+      .populate('avatar');
+
     return res.json({
       user: {
         _id,
         name,
-        email
+        email,
+        avatar
       }
     });
   }
