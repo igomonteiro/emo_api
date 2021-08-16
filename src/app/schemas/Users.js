@@ -24,12 +24,6 @@ const UserSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'File',
   },
-  emotions: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Emotion',
-    }
-  ],
 }, {
   timestamps: true,
 });

@@ -5,6 +5,10 @@ const EmotionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  probability: {
+    type: Number,
+    required: true,
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

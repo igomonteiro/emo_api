@@ -6,6 +6,7 @@ import multerConfig from './config/multer';
 import SessionController from './app/controllers/SessionController';
 import UserController from './app/controllers/UserController';
 import FileController from './app/controllers/FileController';
+import EmotionController from './app/controllers/EmotionController';
 
 // Authentication
 import authenticated from './middlewares/authenticated';
@@ -25,6 +26,13 @@ routes.post('/session', SessionController.newSession);
 // User
 routes.post('/users', UserController.create);
 routes.put('/users', authenticated, UserController.update);
+
+// Emotions
+routes.post('/emotions', authenticated, EmotionController.create);
+routes.get('/emotions', authenticated, EmotionController.returnAllByDay);
+routes.get('/emotions/today/all', authenticated, EmotionController.returnAllToday);
+routes.get('/emotions/date', authenticated, EmotionController.emotionsByDate);
+routes.get('/emotions/week', authenticated, EmotionController.weekEmotions);
 
 // Files
 routes.post('/files', upload.single('file'), authenticated, FileController.create);
