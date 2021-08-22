@@ -14,11 +14,6 @@ import authenticated from './middlewares/authenticated';
 const routes = new Router();
 const upload = multer(multerConfig);
 
-// Test
-routes.get('/', (req, res) => {
-  res.json({ ok: true });
-})
-
 // Session
 routes.get('/session', authenticated, SessionController.getUserLoggedIn);
 routes.post('/session', SessionController.newSession);
@@ -29,8 +24,6 @@ routes.put('/users', authenticated, UserController.update);
 
 // Emotions
 routes.post('/emotions', authenticated, EmotionController.create);
-routes.get('/emotions', authenticated, EmotionController.returnAllByDay);
-routes.get('/emotions/today/all', authenticated, EmotionController.returnAllToday);
 routes.get('/emotions/date', authenticated, EmotionController.emotionsByDate);
 routes.get('/emotions/week', authenticated, EmotionController.weekEmotions);
 

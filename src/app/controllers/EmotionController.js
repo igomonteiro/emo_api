@@ -7,7 +7,8 @@ import {
   startOfWeek,
   endOfWeek,
   format,
-  parse
+  parse,
+  parseISO,
 } from 'date-fns';
 
 class EmotionController {
@@ -22,39 +23,71 @@ class EmotionController {
     const savedEmotion = await emotion.save();
     return res.json(savedEmotion);
   }
-  async returnAllToday(req, res) {
-    const emotions = await Emotion.find({
-      user: req.user._id,
-      createdAt: {
-        $gte: startOfDay(new Date()),
-        $lte: endOfDay(new Date())
-      }
-    });
-
-    const result = emotions.map(res => ({
-      classification: res.classification,
-      time: getHours(res.createdAt), 
-    }));
-
-    return res.json(result);
-  }
   async weekEmotions(req, res) {
     const user = await User.findById(req.user._id);
-    const byWeek = await Emotion.find({
-      user: user._id,
-      createdAt: {
-        $gte: startOfWeek(new Date()),
-        $lte: endOfWeek(new Date())
+    const { date } = req.query;
+    const parsedDate = parse(date, 'yyyy-MM-dd', new Date());
+    const results = await Emotion.aggregate([
+      {
+        $match: {
+            user: user._id,
+            createdAt: {
+              $gte: startOfWeek(parsedDate),
+              $lte: endOfWeek(parsedDate)
+            }
+        },
       },
-    })
+      {
+        $group: {
+          _id: {
+            createdAt: {
+              $dateToString: {
+                format: "%d/%m/%Y",
+                date: "$createdAt"
+              }
+            },
+            classification: "$classification"
+          },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { count: -1 }
+      },
+      {
+        $group: {
+          _id: "$_id.createdAt",
+          classifications: {
+            $push: {
+              k: "$_id.classification",
+              v: "$count"
+            }
+          }
+        }
+      },
+      {
+        $sort: { _id: 1 }
+      },
+      {
+        $addFields: {
+          classifications: {
+            $arrayToObject: "$classifications"
+          }
+        }
+      },
+    ])
 
-    const results = byWeek.map(week => ({
-      classification: week.classification,
-      probability: week.probability,
-      week: format(week.createdAt, 'EEEE'),
-    }))
+    if (!results) {
+      return res.json([]);
+    }
 
-    return res.json(results);
+    const weekResults = results.map(res => ({
+      formattedDate: res._id,
+      day: format(parse(res._id, 'dd/MM/yyyy', new Date()), 'EEEE'),
+      classifications: res.classifications,
+    }));
+
+    return res.json(weekResults);
   }
   async emotionsByDate(req, res) {
     const user = await User.findById(req.user._id);
@@ -85,6 +118,9 @@ class EmotionController {
         }
       },
       {
+        $sort: { count: -1 }
+      },
+      {
         $group: {
           _id: "$_id.createdAt",
           classifications: {
@@ -109,57 +145,6 @@ class EmotionController {
     }
     
     return res.json(results.classifications);
-  }
-  async returnAllByDay(req, res) {
-    const user = await User.findById(req.user._id);
-    const results = await Emotion.aggregate([
-      {
-        $match: { user: user._id},
-      },
-      {
-        $group: {
-          _id: {
-            createdAt: {
-              $dateToString: {
-                format: "%d/%m/%Y",
-                date: "$createdAt"
-              }
-            },
-            classification: "$classification"
-          },
-          count: { $sum: 1 }
-        }
-      },
-      {
-        $group: {
-          _id: "$_id.createdAt",
-          classifications: {
-            $push: {
-              k: "$_id.classification",
-              v: "$count"
-            }
-          }
-        }
-      },
-      {
-        $addFields: {
-          date: "$_id",
-          classifications: {
-            $arrayToObject: "$classifications"
-          }
-        }
-      },
-      {
-        $sort : { date: 1 }
-      },
-      {
-        $project: {
-          _id: 0,
-        }
-      }
-    ])
-
-    return res.json(results);
   }
 }
 

@@ -8,7 +8,7 @@ const FileSchema = new mongoose.Schema({
 });
 
 FileSchema.virtual('url').get(function() {
-  return `http://localhost:3000/files/${this.path}`;
+  return `https://localhost:3000/files/${this.path}`;
 });
 
 FileSchema.set('toObject', { virtuals: true });

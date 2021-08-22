@@ -18,3 +18,4 @@ const EmotionSchema = new mongoose.Schema({
 });
 
 export default mongoose.model('Emotion', EmotionSchema);
+
