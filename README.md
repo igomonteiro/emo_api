@@ -1,4 +1,7 @@
-# emo_api
+# Emo API
+
+Backend para o projeto Emo, leia mais em: [Emo web](https://github.com/igomonteiro/emo_web)
+
 ## Como executar?
 - Basta clonar o repositório.
 - Executar os comandos npm install ou yarn install para instalar as dependências
